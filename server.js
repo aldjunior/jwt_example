@@ -51,7 +51,7 @@ app.use(morgan('dev'));
 // get an instance of the router for api routes
 var apiRoutes = express.Router();
 
-apiRoutes.post('newuser', function(req, res) {
+apiRoutes.post('/newuser', function(req, res) {
 
   User.findOne({name: req.body.name}, function(err, user) {    
     if (err) throw err;
