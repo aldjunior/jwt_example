@@ -1,6 +1,11 @@
 {
   "name": "node-token-jwt",
   "main": "server.js",
+  "version": "0.0.1",
+  "scripts": {
+  	"start": "node server.js"
+  },
+  "author": "Aldenor Junior",
   "dependencies": {
     "body-parser": "^1.0.1",
     "express": "^4.13.3",
