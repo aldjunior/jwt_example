@@ -10,7 +10,7 @@ var User   = require('./app/models/user'); // get our mongoose model
 
 var port = process.env.PORT || 8080; // used to create, sign, and verify tokens
 
-var database = process.env.DATABASE || config.database;
+var database = process.env.MONGOLAB_URI || config.database;
 
 var secretWord = process.env.SECRET || config.secret;
 
