@@ -24,31 +24,48 @@ app.use(bodyParser.json());
 // use morgan to log requests to the console
 app.use(morgan('dev'));
 
-//Routes section
- app.get('/setup', function(req, res) {
+// //Routes section
+//  app.get('/setup', function(req, res) {
 
-//   // create a sample user
-  USER_BASE = process.env.USER_BASE || config.user;
-  USER_BASE_PASSWORD = process.env.USER_BASE_PASSWORD || config.user_pas;
-  var newUser = new User({ 
-    name: USER_BASE, 
-    password: USER_BASE_PASSWORD,
-    admin: true 
-  });
+// //   // create a sample user
+//   USER_BASE = process.env.USER_BASE || config.user;
+//   USER_BASE_PASSWORD = process.env.USER_BASE_PASSWORD || config.user_pas;
+//   var newUser = new User({ 
+//     name: USER_BASE, 
+//     password: USER_BASE_PASSWORD,
+//     admin: true 
+//   });
 
-  // save the sample user
-  newUser.save(function(err) {
-    if (err) throw err;
+//   // save the sample user
+//   newUser.save(function(err) {
+//     if (err) throw err;
 
-    console.log('User saved successfully');
-    res.json({ success: true });
-  });
-});
+//     console.log('User saved successfully');
+//     res.json({ success: true });
+//   });
+// });
+
 
 // API ROUTES -------------------
 
 // get an instance of the router for api routes
-var apiRoutes = express.Router(); 
+var apiRoutes = express.Router();
+
+apiRoutes.post('newuser', function(req, res) {
+
+  User.findOne({name: req.body.name}, function(err, user) {    
+    if (err) throw err;
+
+    if (!user) {
+      var newUser = new User(
+      { 
+          name: req.body.name, 
+          password: req.body.password,
+          admin: false
+      });  
+    }
+  });
+});
 
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 apiRoutes.post('/authenticate', function(req, res) {
@@ -87,36 +104,36 @@ apiRoutes.post('/authenticate', function(req, res) {
 });
 
 // route middleware to verify a token
-// apiRoutes.use(function(req, res, next) {
+apiRoutes.use(function(req, res, next) {
 
-//   // check header or url parameters or post parameters for token
-//   var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-//   // decode token
-//   if (token) {
+  // decode token
+  if (token) {
 
-//     // verifies secret and checks exp
-//     jwt.verify(token, app.get('superSecret'), function(err, decoded) {      
-//       if (err) {
-//         return res.json({ success: false, message: 'Failed to authenticate token.' });    
-//       } else {
-//         // if everything is good, save to request for use in other routes
-//         req.decoded = decoded;    
-//         next();
-//       }
-//     });
+    // verifies secret and checks exp
+    jwt.verify(token, app.get('superSecret'), function(err, decoded) {      
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, save to request for use in other routes
+        req.decoded = decoded;    
+        next();
+      }
+    });
 
-//   } else {
+  } else {
 
-//     // if there is no token
-//     // return an error
-//     return res.status(403).send({ 
-//         success: false, 
-//         message: 'No token provided.' 
-//     });
+    // if there is no token
+    // return an error
+    return res.status(403).send({ 
+        success: false, 
+        message: 'No token provided.' 
+    });
     
-//   }
-// });
+  }
+});
 
 
 
